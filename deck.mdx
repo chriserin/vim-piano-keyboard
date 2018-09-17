@@ -1,0 +1,190 @@
+export const vimSettings = "/* vim:set sw=2:set ts=2:set et: */"
+
+import { Image } from 'mdx-deck'
+import  styled from 'styled-components'
+
+export { dark as theme } from 'mdx-deck/themes'
+
+export const HeaderContainer = styled.div`
+  min-width: 800px;
+  display: flex;
+  flex-flow: columns;
+  justify-content: center;
+`
+export const VimCode = styled.span`
+  font-family: monospace;
+  color: green;
+`
+
+export const Aside = styled.aside`
+  font-style: italic;
+  font-size: 10pt;
+  padding-top: 8px;
+  text-align: left;
+`
+
+
+# A Piano Keyboard in Vim
+
+---
+
+# Problem
+
+A midi sequencer in vim + golang
+
+---
+
+## Sequencers look like this
+
+export const DownImage = styled(Image)`
+  height: 60vh;
+`
+
+<DownImage src='./images/logic_piano_keyboard.png' size="40%" />
+
+<p>
+<strong>X-Axis</strong> is time
+</p>
+
+<p>
+<strong>Y-Axis</strong> is pitch represented by piano keys
+</p>
+---
+
+## In Vim
+
+export const Gutter = styled.div`
+  display: inline-block;
+  padding: 10px;
+  background-color: blue;
+`
+
+export const Lines = styled.div`
+  display: inline-block;
+  padding: 10px;
+  background-color: green;
+`
+
+<p>
+  Vim has <Gutter>Gutters</Gutter>
+</p>
+<p>
+  Vim has <Lines>Lines</Lines>
+</p>
+
+---
+
+
+export const H3 = styled.h3`
+  background-color: blue;
+  padding: 10px;
+  width: 20%;
+`
+
+<HeaderContainer>
+  <H3>Gutters</H3>
+</HeaderContainer>
+
+<p>
+  First you must define a sign
+</p>
+
+``` vimscript
+:sign define C3 text=C3
+```
+
+<p>
+  Then you must place the sign
+</p>
+
+``` vimscript
+:sign place 123 line=1 name=C3 buffer=<nr>
+```
+
+---
+
+export const LinesHeader = styled.h3`
+  background-color: green;
+  padding: 10px;
+  width: 20%;
+`
+
+export const Group = styled.span`
+  color: white;
+  font-weight: 700;
+  background-color: #313131;
+  padding: 10px;
+`
+
+<HeaderContainer>
+  <LinesHeader>Lines</LinesHeader>
+</HeaderContainer>
+
+<p>
+  Define the sign with a <VimCode>linehl</VimCode>
+</p>
+
+``` vimscript
+:sign define C3 text=C3 linehl=Sharp
+```
+
+<p>
+  Define the highlight group <Group>Sharp</Group>
+</p>
+
+``` vimscript
+:set termguicolors 
+:hi Sharp   guibg=#010101
+:hi Natural guibg=#424242
+```
+
+<Aside>
+  *termguicolors only works in gvim, macvim, and neovim
+</Aside>
+
+---
+
+export const BetterPre = styled.pre`
+  font-size: 10pt;
+  pre {
+    background-color: #ddddff;
+    color: black;
+  }
+`
+
+### Iterate Over Notes
+
+<BetterPre>
+
+```vimscript
+let index = 10
+
+notes = [
+  "C2", "C#", "D2", "D#", "E2", "F2", "F#", "G2", "G#", "A2", "A#", "B2",
+  "C3", "C#", "D3", "D#", "E3", "F3", "F#", "G3", "G#", "A3", "A#", "B3"
+]
+
+for noteName in reverse(notes)
+  let index += 1
+
+  if match (noteName, "#") >= 0
+    let defineCommand = "sign define " . noteName . " text=" . noteName . " linehl=Sharp"
+  else
+    let defineCommand = "sign define " . noteName . " text=" . noteName . " linehl=Natural"
+  endif
+
+  call execute(defineCommand)
+
+  let placeCommand = "sign place " . index ." line=". lineNumber ." name=" . noteName . " buffer=" . bufnr('%')
+
+  call execute(placeCommand)
+endfor
+```
+
+</BetterPre>
+
+---
+
+## Final Product
+
+<DownImage src='./images/vim_keyboard.png' size="40%" />
